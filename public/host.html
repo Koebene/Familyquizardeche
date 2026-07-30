@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14111f">
+  <title>Groot scherm — De Grote Familiequiz</title>
+  <link rel="stylesheet" href="/stijl.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🖥️</text></svg>">
+</head>
+<body>
+  <div class="scherm">
+    <header class="scherm-kop">
+      <span class="merk">🎉 De Grote Familiequiz</span>
+      <span class="rondelabel" id="rondeLabel"></span>
+      <span class="codechip" id="codeChip"></span>
+    </header>
+
+    <main class="scherm-midden" id="midden"></main>
+
+    <footer class="scherm-voet">
+      <span class="toetsen">
+        <kbd>spatie</kbd> verder
+        <kbd>←</kbd> terug
+        <kbd>F11</kbd> volledig scherm
+      </span>
+      <span id="voetStatus"></span>
+      <button class="knop" id="verderKnop">Verder</button>
+    </footer>
+  </div>
+
+  <script type="module" src="/host.js"></script>
+</body>
+</html>

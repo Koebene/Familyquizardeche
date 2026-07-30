@@ -1,0 +1,13 @@
+{
+  "name": "familiequiz",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Familiequiz voor op het groot scherm, met de gsm als buzzer.",
+  "scripts": {
+    "dev": "node server.mjs",
+    "start": "node server.mjs",
+    "test": "node test.mjs",
+    "overzicht": "node maak-overzicht.mjs"
+  }
+}

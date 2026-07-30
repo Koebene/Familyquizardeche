@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="nl-BE">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14111f">
+  <title>De Grote Familiequiz</title>
+  <link rel="stylesheet" href="/stijl.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text y='26' font-size='26'>🎉</text></svg>">
+</head>
+<body>
+  <main class="start">
+    <div>
+      <h1>De Grote <span class="accent">Familiequiz</span></h1>
+    </div>
+    <p class="lead">Tien rondes op het groot scherm, iedereen antwoordt op zijn eigen gsm.</p>
+
+    <div class="start-kaarten">
+      <section class="start-kaart">
+        <h2>🖥️ Ik ben de quizmaster</h2>
+        <p>Start een nieuwe quiz op het scherm dat aan de tv of de beamer hangt. Je krijgt een code en een QR-code voor de rest.</p>
+        <button class="knop" id="startKnop">Nieuwe quiz starten</button>
+      </section>
+
+      <section class="start-kaart">
+        <h2>📱 Ik doe mee</h2>
+        <p>Tik de code in die op het groot scherm staat.</p>
+        <form class="rij" id="meedoenForm">
+          <input class="veld" id="codeVeld" maxlength="4" autocomplete="off"
+                 autocapitalize="characters" spellcheck="false" placeholder="CODE"
+                 aria-label="Quizcode">
+          <button class="knop" type="submit">Ga</button>
+        </form>
+      </section>
+    </div>
+
+    <p class="melding verborgen" id="melding" role="alert"></p>
+  </main>
+
+  <script type="module">
+    const melding = document.getElementById('melding');
+    const startKnop = document.getElementById('startKnop');
+
+    function toon(tekst) {
+      melding.textContent = tekst;
+      melding.classList.remove('verborgen');
+    }
+
+    startKnop.addEventListener('click', async () => {
+      startKnop.disabled = true;
+      startKnop.textContent = 'Bezig…';
+      try {
+        const antwoord = await fetch('/api/spel', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ actie: 'nieuw' }),
+        });
+        const data = await antwoord.json();
+        if (!antwoord.ok) throw new Error(data.fout || 'Onbekende fout');
+
+        // De sleutel van de quizmaster blijft op dit toestel staan, zodat
+        // niemand anders per ongeluk de knoppen kan bedienen.
+        localStorage.setItem(`quiz:host:${data.code}`, data.hostToken);
+        location.href = `/host?code=${data.code}`;
+      } catch (fout) {
+        toon(`Kon de quiz niet starten: ${fout.message}`);
+        startKnop.disabled = false;
+        startKnop.textContent = 'Nieuwe quiz starten';
+      }
+    });
+
+    document.getElementById('meedoenForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const code = document.getElementById('codeVeld').value.trim().toUpperCase();
+      if (code.length < 4) return toon('Een quizcode bestaat uit vier tekens.');
+      location.href = `/mee?code=${encodeURIComponent(code)}`;
+    });
+  </script>
+</body>
+</html>
