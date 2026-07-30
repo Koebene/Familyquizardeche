@@ -72,21 +72,24 @@ server, dan is de quiz weg. Prima om te testen.
 ## Online zetten (Vercel)
 
 De quiz heeft online een klein stukje opslag nodig, omdat elke aanvraag
-op een andere machine kan belanden.
+op een andere machine kan belanden. Eenmalig instellen:
 
-```bash
-npx vercel
-```
+1. Ga naar [vercel.com/new](https://vercel.com/new) en importeer de repo
+   `Koebene/Familyquizardeche`. Alle instellingen mogen op de standaard
+   blijven staan — er is geen build-stap.
+2. Open daarna het project → tabblad **Storage** → **Upstash Redis**
+   toevoegen. Het gratis plan volstaat ruimschoots: een avond quizzen
+   kost er maar een fractie van.
+3. Vercel zet zelf `KV_REST_API_URL` en `KV_REST_API_TOKEN` klaar.
+   Deploy daarna nog één keer opnieuw, want omgevingsvariabelen worden
+   pas bij een nieuwe deploy opgepikt (tabblad **Deployments** →
+   *Redeploy* bij de bovenste).
 
-Daarna, eenmalig:
-
-1. Open het project op vercel.com → tabblad **Storage** → **Upstash Redis**
-   toevoegen (het gratis plan volstaat ruimschoots).
-2. Vercel zet dan zelf `KV_REST_API_URL` en `KV_REST_API_TOKEN` klaar.
-3. Deploy opnieuw: `npx vercel --prod`.
-
-Vergeet je stap 1, dan zegt de app dat meteen in plaats van halverwege de
+Vergeet je stap 2, dan zegt de app dat meteen in plaats van halverwege de
 quiz om te vallen.
+
+Vanaf dan deployt elke `git push` vanzelf. Zet je er later vragen bij,
+dan staat dat binnen de minuut online.
 
 Een quiz blijft twaalf uur bewaard en verdwijnt daarna vanzelf.
 
