@@ -69,27 +69,33 @@ op je eigen netwerk, zodat je met een echte gsm op dezelfde wifi kan
 testen. Lokaal wordt het spel in het geheugen bewaard: herstart je de
 server, dan is de quiz weg. Prima om te testen.
 
-## Online zetten (Vercel)
+## Online
 
-De quiz heeft online een klein stukje opslag nodig, omdat elke aanvraag
-op een andere machine kan belanden. Eenmalig instellen:
+De quiz draait op **https://familyquizardeche.vercel.app**.
 
-1. Ga naar [vercel.com/new](https://vercel.com/new) en importeer de repo
-   `Koebene/Familyquizardeche`. Alle instellingen mogen op de standaard
-   blijven staan — er is geen build-stap.
-2. Open daarna het project → tabblad **Storage** → **Upstash Redis**
-   toevoegen. Het gratis plan volstaat ruimschoots: een avond quizzen
-   kost er maar een fractie van.
-3. Vercel zet zelf `KV_REST_API_URL` en `KV_REST_API_TOKEN` klaar.
-   Deploy daarna nog één keer opnieuw, want omgevingsvariabelen worden
-   pas bij een nieuwe deploy opgepikt (tabblad **Deployments** →
-   *Redeploy* bij de bovenste).
+Het Vercel-project hangt aan deze GitHub-repo, dus **elke `git push`
+deployt vanzelf**. Zet je er later vragen bij, dan staat dat binnen de
+minuut online.
 
-Vergeet je stap 2, dan zegt de app dat meteen in plaats van halverwege de
-quiz om te vallen.
+Online is er een klein stukje opslag nodig, omdat elke aanvraag op een
+andere machine kan belanden. Dat is een Redis uit de Vercel-marketplace
+(gratis plan, 30 MB — een avond quizzen gebruikt daar een fractie van).
+Vercel zet daarvoor zelf `REDIS_URL` klaar.
 
-Vanaf dan deployt elke `git push` vanzelf. Zet je er later vragen bij,
-dan staat dat binnen de minuut online.
+`lib/store.js` kiest zelf wat het gebruikt:
+
+| Situatie | Wat het pakt |
+|---|---|
+| `REDIS_URL` staat ingesteld | gewone Redis over TCP |
+| `KV_REST_API_URL` + token | Upstash via REST |
+| geen van beide | het geheugen (lokaal draaien) |
+
+Ontbreekt de koppeling, dan zegt de app dat meteen — inclusief welke
+opslagvariabelen hij wél ziet staan — in plaats van halverwege de quiz om
+te vallen. Let op: omgevingsvariabelen tellen pas mee ná een nieuwe
+deploy.
+
+Een quiz blijft twaalf uur bewaard en verdwijnt daarna vanzelf.
 
 Een quiz blijft twaalf uur bewaard en verdwijnt daarna vanzelf.
 
