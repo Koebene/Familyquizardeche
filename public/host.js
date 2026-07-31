@@ -281,9 +281,18 @@ function tekenVraag(b, onthul) {
       <div class="vraagkop">
         <span>Vraag ${v.nummer} / ${v.totaal}</span>
         ${v.domein ? `<span class="scheiding"></span><span class="domein">${esc(v.domein)}</span>` : ''}
+        <span class="scheiding"></span>${tekenNiveau(v.niveau)}
       </div>
       ${stukken.join('\n')}
     </div>`;
+}
+
+// Drie bolletjes die aangeven hoe zwaar de vraag is. Zonder woorden,
+// zodat het niemand afschrikt voor hij de vraag gelezen heeft.
+function tekenNiveau(niveau) {
+  const hoeveel = { makkelijk: 1, gemiddeld: 2, moeilijk: 3 }[niveau] || 2;
+  const bollen = [1, 2, 3].map((n) => `<i class="${n <= hoeveel ? 'aan' : ''}"></i>`).join('');
+  return `<span class="niveau" title="${esc(niveau || 'gemiddeld')}">${bollen}</span>`;
 }
 
 function tekenOpties(v, onthul) {

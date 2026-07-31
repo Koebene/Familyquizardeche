@@ -432,6 +432,13 @@ kbd {
   background: var(--rand-op);
 }
 .vraagkop .domein { color: var(--goud); font-weight: 600; }
+.vraagkop .niveau { display: inline-flex; gap: 0.5vmin; align-items: center; }
+.vraagkop .niveau i {
+  width: 0.9vmin; height: 0.9vmin;
+  border-radius: 50%;
+  background: var(--rand-op);
+}
+.vraagkop .niveau i.aan { background: var(--goud); }
 
 .vraagtekst {
   margin: 0;

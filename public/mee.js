@@ -692,9 +692,13 @@ function werkBij(b) {
 
   const tekst = document.getElementById('statusTekst');
   if (tekst) {
+    const doorraden = ['zoom', 'charades', 'tekenen'].includes(b.ronde?.type);
+    const mis = b.antwoord?.mis || 0;
+
     if (b.magTekenen) tekst.textContent = 'Iedereen kijkt mee';
     else if (b.beeldtUit) tekst.textContent = 'Jullie zijn aan zet';
     else if (b.antwoord?.vast) tekst.textContent = 'Juist! Vastgezet';
+    else if (mis && doorraden) tekst.textContent = `${mis} misgok${mis === 1 ? '' : 'ken'} — ${mis * 15} punten kwijt`;
     else if (b.antwoord != null) tekst.textContent = 'Ingestuurd — je mag nog wijzigen';
     else tekst.textContent = 'Nog niets ingestuurd';
   }

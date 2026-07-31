@@ -12,7 +12,8 @@ import { statSync } from 'node:fs';
 
 import { rondes, tussenstandNa } from './lib/quiz-data.js';
 import { FOTOS } from './lib/fotos.js';
-import { isGoedAntwoord, normaliseer } from './lib/engine.js';
+import { isGoedAntwoord, normaliseer, PUNTEN, berekenPunten } from './lib/engine.js';
+import { lootRonde, VERHOUDING } from './lib/loting.js';
 import { maakQrMatrix, formaatBits, versieBits } from './public/qr.js';
 
 const HIER = dirname(fileURLToPath(import.meta.url));
@@ -45,8 +46,23 @@ for (const ronde of rondes) {
   check(`${waar} heeft een redelijke tijdslimiet`, ronde.seconden >= 15 && ronde.seconden <= 120, String(ronde.seconden));
   check(`${waar} heeft vragen`, Array.isArray(ronde.vragen) && ronde.vragen.length > 0);
 
+  // Een ruime voorraad is het punt van de loting: minstens anderhalf
+  // keer wat er in één avond gespeeld wordt.
+  const perSpel = ronde.perSpel || ronde.vragen.length;
+  check(`${waar} heeft voorraad genoeg`, ronde.vragen.length >= perSpel * 1.5,
+    `${ronde.vragen.length} vragen voor ${perSpel} per spel`);
+
+  const perNiveau = { makkelijk: 0, gemiddeld: 0, moeilijk: 0 };
+  for (const v of ronde.vragen) perNiveau[v.niveau || 'gemiddeld']++;
+  for (const [niveau, deel] of Object.entries(VERHOUDING)) {
+    // Genoeg van elk niveau om de verhouding te kunnen halen.
+    check(`${waar} heeft genoeg ${niveau}e vragen`, perNiveau[niveau] >= Math.round(perSpel * deel),
+      `${perNiveau[niveau]} beschikbaar, ${Math.round(perSpel * deel)} nodig`);
+  }
+
   ronde.vragen.forEach((v, i) => {
     const waarV = `${ronde.id} vraag ${i + 1}`;
+    check(`${waarV} heeft een geldig niveau`, ['makkelijk', 'gemiddeld', 'moeilijk'].includes(v.niveau || 'gemiddeld'), String(v.niveau));
 
     if (ronde.type === 'mc' || ronde.type === 'woord') {
       check(`${waarV} heeft vier opties`, v.opties?.length === 4, String(v.opties?.length));
@@ -115,61 +131,154 @@ for (const sleutel of gebruikteFotos) {
 }
 
 /* ================================================================== *
+ * 1b. Doet de loting wat ze belooft?
+ * ================================================================== */
+
+kop('De loting');
+
+for (const ronde of rondes) {
+  const perSpel = ronde.perSpel || ronde.vragen.length;
+  const tellingen = { makkelijk: 0, gemiddeld: 0, moeilijk: 0 };
+  const gezien = new Set();
+  const RONDES = 200;
+
+  for (let n = 0; n < RONDES; n++) {
+    const nummers = lootRonde(ronde);
+    if (n === 0) check(`${ronde.id}: loot het juiste aantal`, nummers.length === perSpel, `${nummers.length} van ${perSpel}`);
+    if (new Set(nummers).size !== nummers.length) check(`${ronde.id}: geen dubbele vragen`, false);
+    for (const i of nummers) {
+      gezien.add(i);
+      tellingen[ronde.vragen[i].niveau || 'gemiddeld']++;
+    }
+  }
+
+  const totaal = perSpel * RONDES;
+  for (const [niveau, deel] of Object.entries(VERHOUDING)) {
+    const gemeten = tellingen[niveau] / totaal;
+    check(`${ronde.id}: aandeel ${niveau} klopt ongeveer`, Math.abs(gemeten - deel) < 0.12,
+      `${(gemeten * 100).toFixed(0)}% tegenover de bedoelde ${(deel * 100).toFixed(0)}%`);
+  }
+  check(`${ronde.id}: op den duur komt elke vraag aan bod`, gezien.size === ronde.vragen.length,
+    `${gezien.size} van ${ronde.vragen.length} vragen ooit geloot`);
+}
+
+/* ================================================================== *
  * 2. Worden echte antwoorden herkend?
  * ================================================================== */
 
 kop('Antwoorden van echte mensen');
 
-const vraag = (id, i) => rondes.find((r) => r.id === id).vragen[i];
-const opdracht = (id, i) => {
-  const v = vraag(id, i);
+// Vragen opzoeken op inhoud, niet op volgnummer: de voorraad groeit en
+// schuift, en dan mag een test niet stilletjes iets anders gaan testen.
+function vraag(rondeId, zoek) {
+  const ronde = rondes.find((r) => r.id === rondeId);
+  const gevonden = ronde.vragen.find((v) =>
+    (v.antwoord && String(v.antwoord).toLowerCase().includes(zoek.toLowerCase())) ||
+    (v.q && String(v.q).toLowerCase().includes(zoek.toLowerCase())) ||
+    (v.foto && v.foto === zoek));
+  if (!gevonden) throw new Error(`test verwijst naar een vraag die niet bestaat: ${rondeId} / "${zoek}"`);
+  return gevonden;
+}
+
+function opdracht(rondeId, zoek) {
+  const v = vraag(rondeId, zoek);
   return { antwoord: v.q, sleutelwoorden: v.sleutelwoorden };
-};
+}
 
 const goed = (invoer, v, label) => check(`"${invoer}" is goed (${label})`, isGoedAntwoord(invoer, v));
 const mis = (invoer, v, label) => check(`"${invoer}" is fout (${label})`, !isGoedAntwoord(invoer, v));
 
-const merckx = vraag('cryptisch', 0);
+const merckx = vraag('cryptisch', 'Merckx');
 goed('Eddy Merckx', merckx, 'volledig');
 goed('merckx', merckx, 'achternaam');
 goed('Eddy Merkx', merckx, 'typfout');
 mis('Tom Boonen', merckx, 'andere renner');
 
-goed('Hergé', vraag('cryptisch', 3), 'met accent');
-goed('herge', vraag('cryptisch', 3), 'zonder accent');
-goed('van damme', vraag('cryptisch', 1), 'achternaam');
-goed('JCVD', vraag('cryptisch', 1), 'afkorting');
+const herge = vraag('cryptisch', 'Hergé');
+goed('Hergé', herge, 'met accent');
+goed('herge', herge, 'zonder accent');
+const jcvd = vraag('cryptisch', 'Van Damme');
+goed('van damme', jcvd, 'achternaam');
+goed('JCVD', jcvd, 'afkorting');
 
-const belgie = vraag('geo', 0);
+const belgie = vraag('geo', 'atomium');
 goed('België', belgie, 'met accent');
 goed('belgie', belgie, 'zonder accent');
 mis('Nederland', belgie, 'ander land');
-goed('Engeland', vraag('geo', 3), 'volkstaal');
-goed('uk', vraag('geo', 3), 'afkorting');
+const uk = vraag('geo', 'bigben');
+goed('Engeland', uk, 'volkstaal');
+goed('uk', uk, 'afkorting');
 
-goed('De Leeuwenkoning', vraag('emoji', 0), 'nederlandse titel');
-goed('lion king', vraag('emoji', 0), 'engelse titel');
-mis('Madagascar', vraag('emoji', 0), 'andere film');
+const leeuw = vraag('emoji', 'Lion King');
+goed('De Leeuwenkoning', leeuw, 'nederlandse titel');
+goed('lion king', leeuw, 'engelse titel');
+mis('Madagascar', leeuw, 'andere film');
 
-goed('frietjes', vraag('zoom', 0), 'verkleinwoord');
-goed('een pak frieten', vraag('zoom', 0), 'met lidwoord');
-mis('pizza', vraag('zoom', 0), 'iets anders');
+const friet = vraag('zoom', 'frieten');
+goed('frietjes', friet, 'verkleinwoord');
+goed('een pak frieten', friet, 'met lidwoord');
+mis('pizza', friet, 'iets anders');
 
-goed('pinguin', opdracht('uitbeelden', 0), 'kernwoord');
-goed('pinguïns die waggelen', opdracht('uitbeelden', 0), 'in een zin');
-mis('ijsbeer', opdracht('uitbeelden', 0), 'fout dier');
-goed('strafschop', opdracht('uitbeelden', 3), 'synoniem');
+const pinguin = opdracht('uitbeelden', 'pinguïn');
+goed('pinguin', pinguin, 'kernwoord');
+goed('pinguïns die waggelen', pinguin, 'in een zin');
+mis('ijsbeer', pinguin, 'fout dier');
+goed('strafschop', opdracht('uitbeelden', 'penalty'), 'synoniem');
 
-const kat = opdracht('tekenen', 0);
+const kat = opdracht('tekenen', 'stofzuiger');
 goed('een kat op een stofzuiger', kat, 'volledig');
 goed('poes stofzuiger', kat, 'synoniem');
 goed('stofzuigende kat', kat, 'verbuiging');
 mis('een kat', kat, 'halve gok');
 mis('hond op een stofzuiger', kat, 'fout dier');
 
-const gsm = opdracht('tekenen', 2);
+const gsm = opdracht('tekenen', 'toilet');
 goed('telefoon in de wc', gsm, 'synoniemen');
 mis('telefoon', gsm, 'onvolledig');
+
+/* ================================================================== *
+ * 2b. Kosten foute antwoorden wat ze horen te kosten?
+ * ================================================================== */
+
+kop('Strafpunten');
+
+{
+  const nu = Date.now();
+  const mcRonde = { type: 'mc', seconden: 25 };
+  const mcVraag = { antwoord: 1, opties: ['A', 'B', 'C', 'D'] };
+
+  const mcUit = berekenPunten(mcRonde, mcVraag, {
+    juist: { waarde: 1, at: nu },
+    fout: { waarde: 3, at: nu },
+  }, nu, []);
+  check('juist meerkeuze levert punten op', mcUit.juist.punten > 0, String(mcUit.juist.punten));
+  check('fout meerkeuze kost punten', mcUit.fout.punten === PUNTEN.fout.mc, String(mcUit.fout.punten));
+  check('wie niets instuurt komt niet in de uitslag', !('stil' in mcUit));
+
+  const zoomRonde = { type: 'zoom', seconden: 30 };
+  const zoomVraag = { antwoord: 'Een fiets', accept: ['fiets'] };
+  const zoomUit = berekenPunten(zoomRonde, zoomVraag, {
+    snel: { waarde: 'fiets', at: nu + 2000, mis: 0 },
+    traag: { waarde: 'fiets', at: nu + 9000, mis: 3 },
+    mis: { waarde: 'auto', at: nu + 5000, mis: 2 },
+    spam: { waarde: 'auto', at: nu + 6000, mis: 40 },
+  }, nu, []);
+  check('eerste rader krijgt de hoogste trap', zoomUit.snel.punten === PUNTEN.zoom[0], String(zoomUit.snel.punten));
+  check('tweede rader krijgt minder, min zijn misgokken',
+    zoomUit.traag.punten === PUNTEN.zoom[1] + 3 * PUNTEN.misgok, String(zoomUit.traag.punten));
+  check('wie het nooit raadt betaalt zijn misgokken',
+    zoomUit.mis.punten === 2 * PUNTEN.misgok, String(zoomUit.mis.punten));
+  check('eindeloos spammen wordt afgetopt',
+    zoomUit.spam.punten === PUNTEN.misgokBodem, String(zoomUit.spam.punten));
+
+  const schatUit = berekenPunten({ type: 'estimate', seconden: 30 }, { antwoord: 100 }, {
+    dichtst: { waarde: 98, at: nu },
+    verder: { waarde: 300, at: nu },
+  }, nu, []);
+  check('bij schatten verliest niemand punten',
+    schatUit.dichtst.punten > 0 && schatUit.verder.punten > 0,
+    `${schatUit.dichtst.punten} en ${schatUit.verder.punten}`);
+}
 
 /* ================================================================== *
  * 3. Klopt de QR-code?
