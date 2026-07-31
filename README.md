@@ -97,7 +97,6 @@ deploy.
 
 Een quiz blijft twaalf uur bewaard en verdwijnt daarna vanzelf.
 
-Een quiz blijft twaalf uur bewaard en verdwijnt daarna vanzelf.
 
 ## Hoe het in elkaar zit
 
