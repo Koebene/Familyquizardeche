@@ -8,5 +8,8 @@
     "dev": "node server.mjs",
     "test": "node test.mjs",
     "overzicht": "node maak-overzicht.mjs"
+  },
+  "dependencies": {
+    "redis": "^4.7.0"
   }
 }

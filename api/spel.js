@@ -16,15 +16,24 @@ import {
   hostBeeld,
   spelerBeeld,
 } from '../lib/engine.js';
-import { lees, schrijfNieuw, pasAan, gebruiktRedis } from '../lib/store.js';
+import { lees, schrijfNieuw, pasAan, gebruiktRedis, gevondenOpslagVariabelen } from '../lib/store.js';
 
 // Op Vercel draait elke aanvraag mogelijk op een andere machine. Zonder
 // Redis lijkt de quiz te starten en valt ze halverwege om, precies
 // wanneer de familie al aan tafel zit. Dan liever meteen duidelijk zijn.
 const ONGECONFIGUREERD = Boolean(process.env.VERCEL) && !gebruiktRedis;
-const OPSLAG_FOUT =
-  'Deze quiz heeft nog geen opslag. Koppel in Vercel een Upstash Redis (tabblad Storage) ' +
-  'en deploy opnieuw. Zie de README.';
+
+// De namen van de gevonden variabelen erbij, zodat meteen duidelijk is
+// of de koppeling ontbreekt of alleen anders heet dan verwacht.
+function opslagFout() {
+  const gezien = gevondenOpslagVariabelen();
+  return {
+    fout:
+      'Deze quiz heeft nog geen opslag. Koppel in Vercel onder Storage een Redis ' +
+      'en deploy daarna opnieuw — omgevingsvariabelen tellen pas mee na een nieuwe deploy.',
+    gevondenVariabelen: gezien.length ? gezien : null,
+  };
+}
 
 function stuur(res, status, data) {
   const body = JSON.stringify(data);
@@ -56,7 +65,7 @@ function schoonCode(waarde) {
 
 export default async function handler(req, res) {
   try {
-    if (ONGECONFIGUREERD) return stuur(res, 503, { fout: OPSLAG_FOUT });
+    if (ONGECONFIGUREERD) return stuur(res, 503, opslagFout());
     if (req.method === 'GET') return await afhandelenGet(req, res);
     if (req.method === 'POST') return await afhandelenPost(req, res);
     return stuur(res, 405, { fout: 'Methode niet toegestaan.' });
