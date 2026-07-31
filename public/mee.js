@@ -11,6 +11,30 @@ const kopScore = document.getElementById('kopScore');
 
 const code = new URLSearchParams(location.search).get('code')?.toUpperCase() || '';
 
+/* ------------------------------------------------------------------ *
+ * Zoomen tegenhouden
+ * ------------------------------------------------------------------ */
+
+// Safari op iOS negeert user-scalable=no. Tijdens het tekenen zoomde je
+// daardoor de hele pagina in, zonder weg terug. Deze gebaren horen hier
+// gewoon niet thuis: alles past al op het scherm.
+for (const gebeurtenis of ['gesturestart', 'gesturechange', 'gestureend']) {
+  document.addEventListener(gebeurtenis, (e) => e.preventDefault(), { passive: false });
+}
+
+// Twee vingers op het scherm: nooit zoomen.
+document.addEventListener('touchmove', (e) => {
+  if (e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
+// En dubbeltikken mag ook niet inzoomen.
+let laatsteTik = 0;
+document.addEventListener('touchend', (e) => {
+  const nu = Date.now();
+  if (nu - laatsteTik < 350) e.preventDefault();
+  laatsteTik = nu;
+}, { passive: false });
+
 // Deze telefoon houdt zijn eigen kenmerk bij, zodat je na een herlaadbeurt
 // gewoon weer in je eigen team zit.
 let spelerId = localStorage.getItem('quiz:speler');
@@ -74,6 +98,87 @@ function toonFout(tekst) {
 }
 
 /* ------------------------------------------------------------------ *
+ * De teamfoto
+ * ------------------------------------------------------------------ */
+
+// De foto gaat mee in de spelstand, en die reist bij elk antwoord heen
+// en weer. Daarom knippen we hem vierkant en schalen we hem terug naar
+// 160 pixels: groot genoeg om je gezicht te herkennen op een tv, klein
+// genoeg om niemand tot last te zijn.
+const FOTO_MAAT = 160;
+
+let gekozenFoto = null;
+
+function verkleinFoto(bestand) {
+  return new Promise((klaar, mis) => {
+    const lezer = new FileReader();
+    lezer.onerror = () => mis(new Error('Kon de foto niet lezen.'));
+    lezer.onload = () => {
+      const beeldje = new Image();
+      beeldje.onerror = () => mis(new Error('Dat lijkt geen foto te zijn.'));
+      beeldje.onload = () => {
+        const doek = document.createElement('canvas');
+        doek.width = FOTO_MAAT;
+        doek.height = FOTO_MAAT;
+        const ctx = doek.getContext('2d');
+
+        // Vierkant uit het midden knippen, zodat gezichten niet
+        // half wegvallen bij een liggende of staande foto.
+        const zijde = Math.min(beeldje.width, beeldje.height);
+        const bronX = (beeldje.width - zijde) / 2;
+        const bronY = (beeldje.height - zijde) / 2;
+        ctx.drawImage(beeldje, bronX, bronY, zijde, zijde, 0, 0, FOTO_MAAT, FOTO_MAAT);
+
+        // Zakt de kwaliteit tot de foto zeker klein genoeg is.
+        let uit = doek.toDataURL('image/jpeg', 0.72);
+        for (const kwaliteit of [0.6, 0.5, 0.4]) {
+          if (uit.length <= 22000) break;
+          uit = doek.toDataURL('image/jpeg', kwaliteit);
+        }
+        klaar(uit);
+      };
+      beeldje.src = lezer.result;
+    };
+    lezer.readAsDataURL(bestand);
+  });
+}
+
+function koppelFotoveld() {
+  const veld = document.getElementById('fotoVeld');
+  const knop = document.getElementById('fotoKnop');
+  const voorbeeld = document.getElementById('fotoVoorbeeld');
+  if (!veld || !knop) return;
+
+  knop.addEventListener('click', () => veld.click());
+
+  veld.addEventListener('change', async () => {
+    const bestand = veld.files?.[0];
+    if (!bestand) return;
+    knop.disabled = true;
+    knop.textContent = 'Bezig…';
+    try {
+      gekozenFoto = await verkleinFoto(bestand);
+      if (voorbeeld) {
+        voorbeeld.innerHTML = `<img src="${gekozenFoto}" alt="Je teamfoto">`;
+        voorbeeld.classList.remove('verborgen');
+      }
+      knop.textContent = 'Opnieuw';
+      // Zit je al in een team? Dan meteen doorsturen.
+      if (beeld?.team) {
+        const data = await stuur({ actie: 'foto', foto: gekozenFoto });
+        if (data.beeld) verwerk(data.beeld, true);
+      }
+    } catch (fout) {
+      toonFout(fout.message);
+      knop.textContent = 'Foto nemen';
+    } finally {
+      knop.disabled = false;
+      veld.value = '';
+    }
+  });
+}
+
+/* ------------------------------------------------------------------ *
  * Tekenen
  * ------------------------------------------------------------------ */
 
@@ -120,21 +225,37 @@ function tekenOpnieuw() {
   }
 }
 
-// Elke halve seconde gaan de nieuwe lijnen naar de server. Alleen wat er
-// bij gekomen is, niet de hele tekening opnieuw.
+// Elke halve seconde gaan de nieuwe lijnen naar de server.
+//
+// Belangrijk: een lijn die je nog aan het trekken bent, mag niet als
+// verzonden afgevinkt worden. Deed hij dat wel, dan kwamen de punten die
+// je daarna nog zette nooit meer aan — en werd elke haal afgekapt op het
+// moment dat de klok toevallig tikte. Daarom sturen we de lopende lijn
+// telkens opnieuw mee, en tellen we alleen afgewerkte lijnen als klaar.
 async function verstuurLijnen() {
   if (teken.bezig) return;
-  const heeftNieuwe = teken.strepen.length > teken.verzonden;
-  if (!teken.moetWissen && !heeftNieuwe) return;
+
+  // De lijn die je nu trekt is nog niet af en groeit nog.
+  const afgewerkt = teken.actief ? teken.strepen.length - 1 : teken.strepen.length;
+  if (!teken.moetWissen && teken.strepen.length <= teken.verzonden) return;
 
   teken.bezig = true;
   const wissen = teken.moetWissen;
-  const teSturen = wissen ? teken.strepen.slice() : teken.strepen.slice(teken.verzonden);
-  const tot = teken.strepen.length;
+  const vanaf = wissen ? 0 : teken.verzonden;
+
+  // Elk volgnummer zegt de server op welke plek de lijn hoort. Zo
+  // vervangt de lopende lijn zichzelf in plaats van dubbel te komen.
+  const teSturen = teken.strepen.slice(vanaf).map((streep, n) => ({
+    ...streep,
+    i: vanaf + n,
+    p: streep.p.slice(), // momentopname
+  }));
 
   try {
     await stuur({ actie: 'tekenen', strepen: teSturen, wissen });
-    teken.verzonden = tot;
+    // Alleen afgewerkte lijnen tellen als klaar; de lopende gaat de
+    // volgende beurt opnieuw mee, dan met de punten die erbij kwamen.
+    teken.verzonden = afgewerkt;
     if (wissen) teken.moetWissen = false;
   } catch {
     // Niet erg: bij de volgende beurt proberen we het gewoon opnieuw.
@@ -265,8 +386,15 @@ function verwerk(nieuw, gedwongen = false) {
 
   if (nieuw.team) {
     gsmKop.classList.remove('verborgen');
-    kopStip.style.background = nieuw.team.kleur;
-    kopNaam.textContent = `${nieuw.team.emoji} ${nieuw.team.naam}`;
+    kopStip.style.borderColor = nieuw.team.kleur;
+    if (nieuw.team.foto) {
+      kopStip.style.backgroundImage = `url(${nieuw.team.foto})`;
+      kopStip.classList.add('metFoto');
+      kopNaam.textContent = nieuw.team.naam;
+    } else {
+      kopStip.style.background = nieuw.team.kleur;
+      kopNaam.textContent = `${nieuw.team.emoji} ${nieuw.team.naam}`;
+    }
     kopScore.textContent = nieuw.team.score;
     kopPlek.textContent = nieuw.team.plaats ? `${nieuw.team.plaats}e` : '';
   } else {
@@ -300,6 +428,7 @@ function tekenScherm(b) {
         <div class="groot">${esc(b.ronde.icoon)}</div>
         <h1 class="gsm-titel">${esc(b.ronde.naam)}</h1>
         <p class="gsm-sub">${esc(b.ronde.uitleg)}</p>
+        ${b.ronde.regels?.length ? `<ul class="regels klein">${b.ronde.regels.map((r) => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
       </div>`;
     case 'vraag': return tekenVraag(b);
     case 'reveal': return tekenReveal(b);
@@ -325,7 +454,7 @@ function tekenAanmelden(b) {
   const teams = b.teams?.length
     ? b.teams.map((t) => `
         <button class="keuze" data-team="${esc(t.id)}">
-          <span class="letter">${esc(t.emoji)}</span>
+          <span class="letter">${t.foto ? `<img class="mini-foto" src="${t.foto}" alt="">` : esc(t.emoji)}</span>
           <span>${esc(t.naam)}<br><small style="color:var(--grijs)">${t.aantal} speler${t.aantal === 1 ? '' : 's'}</small></span>
         </button>`).join('')
     : '';
@@ -334,6 +463,18 @@ function tekenAanmelden(b) {
     <h1 class="gsm-titel">Wie ben jij?</h1>
     <input class="veld" id="naamVeld" maxlength="20" placeholder="Je voornaam"
            autocomplete="given-name" enterkeyhint="done">
+
+    <div class="fotoblok">
+      <div class="fotorij">
+        <div class="fotovoorbeeld verborgen" id="fotoVoorbeeld"></div>
+        <div class="fototekst">
+          <strong>Teamfoto</strong>
+          <span>Komt op het groot scherm bij elke tussenstand. Overslaan mag.</span>
+        </div>
+      </div>
+      <button class="knop stil" type="button" id="fotoKnop">📸 Foto nemen</button>
+      <input type="file" accept="image/*" capture="user" id="fotoVeld" class="verborgen">
+    </div>
 
     ${teams ? `
       <h2 class="gsm-titel" style="font-size:1.1rem;margin-top:.6rem">Sluit aan bij een team</h2>
@@ -470,7 +611,7 @@ function miniStand(b) {
   return `<div class="mini-stand">${b.stand.map((t) => `
     <div class="mini-rij ${t.id === b.team?.id ? 'ik' : ''}">
       <span class="plaats">${t.plaats}</span>
-      <span>${esc(t.emoji)}</span>
+      ${t.foto ? `<img class="mini-foto" src="${t.foto}" alt="">` : `<span>${esc(t.emoji)}</span>`}
       <span class="naam">${esc(t.naam)}</span>
       <span class="punten">${t.score}</span>
     </div>`).join('')}</div>`;
@@ -509,7 +650,7 @@ function koppelScherm(b) {
     e.preventDefault();
     const naam = document.getElementById('teamVeld').value;
     try {
-      const data = await stuur({ actie: 'nieuwTeam', naam, spelerNaam: naamVeld?.value });
+      const data = await stuur({ actie: 'nieuwTeam', naam, spelerNaam: naamVeld?.value, foto: gekozenFoto });
       if (data.beeld) verwerk(data.beeld, true);
     } catch (fout) { toonFout(fout.message); }
   });
@@ -528,11 +669,14 @@ function koppelScherm(b) {
     const waarde = veld.value.trim();
     if (!waarde) return;
     stuurAntwoord(waarde);
-    if (b.ronde?.type === 'charades' || b.ronde?.type === 'tekenen') veld.value = '';
+    // In de rondes waar je blijft raden, maken we het veld leeg voor de
+    // volgende gok in plaats van het toetsenbord weg te halen.
+    if (['charades', 'tekenen', 'zoom'].includes(b.ronde?.type)) veld.value = '';
     else veld.blur();
   });
 
-  // Tekenen
+  // Teamfoto en tekenen
+  koppelFotoveld();
   koppelTekenvlak();
   koppelGereedschap();
 }
@@ -568,15 +712,12 @@ function tik() {
   const klok = document.getElementById('statusKlok');
   const regel = document.getElementById('statusregel');
   if (balk) balk.style.width = `${Math.max(0, Math.min(100, (over / limiet) * 100))}%`;
-  if (klok) klok.textContent = `${Math.ceil(over)}s`;
   if (regel) regel.classList.toggle('bijna', over <= 5);
 
-  // Tijd om: invoer op slot, zodat niemand nog nagooit.
-  if (over <= 0) {
-    document.querySelectorAll('.keuze, #tekstForm button, #tekstVeld').forEach((el) => {
-      el.disabled = true;
-    });
-  }
+  // De klok is voor de snelheidsbonus, niet voor de deur. Wie te laat is
+  // verliest die bonus maar mag nog gewoon antwoorden, tot de quizmaster
+  // de vraag sluit.
+  if (klok) klok.textContent = over > 0 ? `${Math.ceil(over)}s` : 'geen bonus';
 }
 
 /* ------------------------------------------------------------------ *

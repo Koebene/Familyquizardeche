@@ -37,10 +37,25 @@ let sleutel = '';
 let klokAfwijking = 0; // verschil tussen de serverklok en deze machine
 let bezig = false;
 
+// Zodra iedereen geantwoord heeft tellen we kort af en gaan we vanzelf
+// naar het antwoord. Die paar seconden zijn er met opzet: wie net getikt
+// heeft kan zich nog bedenken, en het voelt minder abrupt.
+const AFTELLEN_MS = 3000;
+let aftelTot = 0;
+let aftelVoor = '';
+
 const esc = (tekst) =>
   String(tekst ?? '').replace(/[&<>"']/g, (t) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[t]));
 
 const LETTERS = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+// Een team toont zijn foto als het er een heeft, anders zijn emoji.
+function gezicht(team, maat = 'klein') {
+  if (team.foto) {
+    return `<img class="gezicht ${maat}" src="${team.foto}" alt="" style="border-color:${esc(team.kleur)}">`;
+  }
+  return `<div class="gezicht ${maat} leeg" style="border-color:${esc(team.kleur)}">${esc(team.emoji)}</div>`;
+}
 
 /* ------------------------------------------------------------------ *
  * Praten met de server
@@ -117,8 +132,8 @@ function tekenFase(b) {
     case 'ronde-intro': return tekenIntro(b);
     case 'vraag': return tekenVraag(b, false);
     case 'reveal': return tekenVraag(b, true);
-    case 'tussenstand': return tekenStand(b, 'Tussenstand');
-    case 'einde': return tekenEinde(b);
+    case 'tussenstand': return tekenEinde(b, false);
+    case 'einde': return tekenEinde(b, true);
     default: return '';
   }
 }
@@ -130,25 +145,27 @@ function tekenLobby(b) {
   const qr = qrAlsSvg(url, { module: 6, rand: 3 });
 
   const teams = b.stand.length
-    ? b.stand.map((t) => `
-        <div class="team-bubbel">
-          <span class="stip" style="background:${esc(t.kleur)}"></span>
-          <span>${esc(t.emoji)} ${esc(t.naam)}</span>
-          <span class="aantal">${t.leden.length}</span>
+    ? b.stand.map((t, i) => `
+        <div class="team-kaart" style="animation-delay:${i * 70}ms">
+          ${gezicht(t, 'middel')}
+          <span class="naam">${esc(t.naam)}</span>
         </div>`).join('')
     : '<p class="leeg-tekst">Nog niemand aangesloten…</p>';
 
   return `
-    <div class="lobby">
-      <div class="lobby-links">
+    <div class="lobbyblok">
+      <div class="lobby">
         <div class="lobby-qr">${qr}</div>
-        <div class="lobby-url">of surf naar<br><strong>${esc(deelBasis.replace(/^https?:\/\//, ''))}</strong></div>
+        <div class="lobby-tekst">
+          <div class="eyebrow">Scan met je gsm, of surf naar</div>
+          <div class="lobby-adres">${esc(deelBasis.replace(/^https?:\/\//, ''))}</div>
+          <div class="lobby-code">${esc(b.code)}</div>
+          <p class="lobby-uitleg">Maak een team of sluit aan bij een bestaand team.<br>
+            Zet gerust een kind bij een volwassene — dat speelt het leukst.</p>
+        </div>
       </div>
-      <div class="lobby-rechts">
-        <h1>Scan met je gsm</h1>
-        <div class="lobby-code">${esc(b.code)}</div>
-        <p class="lobby-uitleg">Maak een team aan of sluit aan bij een bestaand team.<br>
-          Zet gerust een kind bij een volwassene — dat speelt het leukst.</p>
+      <div class="teamband">
+        <div class="bandlabel">${b.stand.length ? `${b.stand.length} team${b.stand.length === 1 ? '' : 's'} klaar` : 'Wachten op de eerste ploeg'}</div>
         <div class="team-wolk">${teams}</div>
       </div>
     </div>`;
@@ -157,11 +174,15 @@ function tekenLobby(b) {
 /* ---------------------------- Ronde-intro --------------------------- */
 
 function tekenIntro(b) {
+  const regels = (b.ronde.regels || []).map((regel, i) => `
+    <li style="animation-delay:${180 + i * 130}ms">${esc(regel)}</li>`).join('');
+
   return `
     <div class="intro">
       <div class="icoon">${esc(b.ronde.icoon)}</div>
       <h1>${esc(b.ronde.naam)}</h1>
       <p>${esc(b.ronde.uitleg)}</p>
+      ${regels ? `<ul class="regels">${regels}</ul>` : ''}
     </div>`;
 }
 
@@ -202,12 +223,15 @@ function tekenVraag(b, onthul) {
       if (v.eenheid) stukken.push(`<div class="eenheid">antwoord in ${esc(v.eenheid)}</div>`);
       break;
 
+    // Bij het antwoord moet de foto plaats maken voor de uitslag,
+    // anders valt de onderste helft van het scherm weg.
     case 'geo':
-      stukken.push(`<div class="tekening" id="tekening">${svgVan(v.art)}</div>`);
+      stukken.push(`<div class="fotokader ${onthul ? 'compact' : ''}"><img src="${esc(v.foto)}" alt=""></div>`);
       break;
 
     case 'zoom':
-      stukken.push(`<div class="tekening" id="tekening">${svgVan(v.art, true)}</div>`);
+      // Begint sterk ingezoomd op het midden en opent traag, met CSS.
+      stukken.push(`<div class="fotokader zoomkader ${onthul ? 'compact' : ''}"><img id="zoomFoto" src="${esc(v.foto)}" alt=""></div>`);
       break;
 
     case 'charades':
@@ -246,12 +270,18 @@ function tekenVraag(b, onthul) {
           </svg>
           <div class="cijfer" id="klokCijfer">–</div>
         </div>
-        <div class="teller"><strong id="binnenTeller">0</strong> / ${b.stand.length} binnen</div>
+        <div class="teller">
+          <strong id="binnenTeller">0</strong> / ${b.verwachteAntwoorden ?? b.stand.length} binnen
+          <div class="aftellen verborgen" id="aftellen"></div>
+        </div>
       </div>`);
   }
 
   return `<div class="vraagblok">
-      <div style="font-size:2vmin;color:var(--grijs);letter-spacing:.14em">VRAAG ${v.nummer} / ${v.totaal}</div>
+      <div class="vraagkop">
+        <span>Vraag ${v.nummer} / ${v.totaal}</span>
+        ${v.domein ? `<span class="scheiding"></span><span class="domein">${esc(v.domein)}</span>` : ''}
+      </div>
       ${stukken.join('\n')}
     </div>`;
 }
@@ -264,12 +294,6 @@ function tekenOpties(v, onthul) {
         <span>${esc(tekst)}</span>
       </div>`;
   }).join('')}</div>`;
-}
-
-function svgVan(art, isZoom = false) {
-  if (!art) return '';
-  const id = isZoom ? ' id="zoomSvg"' : '';
-  return `<svg${id} xmlns="http://www.w3.org/2000/svg" viewBox="${art.viewBox}" preserveAspectRatio="xMidYMid slice">${art.svg}</svg>`;
 }
 
 function tekenOnthulling(b, v) {
@@ -285,6 +309,7 @@ function tekenOnthulling(b, v) {
       <div class="label">Het juiste antwoord</div>
       <div class="waarde">${esc(waarde)}</div>
       ${v.weetje ? `<p class="weetje">${esc(v.weetje)}</p>` : ''}
+      ${v.bron ? `<p class="bronvermelding">Foto: ${esc(v.bron.maker || 'onbekend')} — ${esc(v.bron.licentie)}, via Wikimedia Commons</p>` : ''}
     </div>`;
 }
 
@@ -292,7 +317,7 @@ function tekenUitslag(b) {
   if (!b.uitslag?.length) return '<p class="leeg-tekst">Niemand heeft geantwoord.</p>';
   return `<div class="uitslagrij">${b.uitslag.map((r) => `
       <div class="uitslag-kaart ${r.goed ? 'goed' : ''}">
-        <span>${esc(r.emoji)} ${esc(r.naam)}</span>
+        ${gezicht(r)}<span>${esc(r.naam)}</span>
         <span class="detail">${esc(r.toelichting)}</span>
         <span class="punten">${r.punten > 0 ? '+' : ''}${r.punten}</span>
       </div>`).join('')}</div>`;
@@ -300,52 +325,65 @@ function tekenUitslag(b) {
 
 /* ---------------------------- Standen ------------------------------- */
 
-function tekenStand(b, titel) {
-  return `
-    <div class="stand">
-      <h1>${esc(titel)}</h1>
-      ${b.stand.map((t, i) => `
-        <div class="standrij ${i === 0 ? 'top' : ''}" style="animation-delay:${i * 90}ms">
-          <span class="plaats">${t.plaats}</span>
-          <span class="emoji">${esc(t.emoji)}</span>
-          <span class="naam">${esc(t.naam)}</span>
-          <span class="punten">${t.score}</span>
-        </div>`).join('')}
-    </div>`;
-}
-
-function tekenEinde(b) {
+// Hetzelfde podium voor de tussenstand en de eindstand. Het verschil zit
+// in de kop erboven en in wat er te vieren valt.
+function tekenEinde(b, isEinde) {
   const top = b.stand.slice(0, 3);
   const rest = b.stand.slice(3);
   if (!top.length) return '<div class="intro"><h1>Geen deelnemers</h1></div>';
 
-  const winnaar = top[0];
+  const leider = top[0];
   const treden = top.map((t, i) => `
     <div class="trede p${i + 1}">
       <div class="kop">
-        <div class="emoji">${esc(t.emoji)}</div>
+        ${gezicht(t, 'groot')}
         <div class="naam">${esc(t.naam)}</div>
         <div class="punten">${t.score} punten</div>
       </div>
       <div class="blok" style="animation-delay:${(2 - i) * 180}ms">${i + 1}</div>
     </div>`).join('');
 
+  const kop = isEinde
+    ? `<div class="winnaar">
+         <div class="kroon">👑</div>
+         <h1>${esc(leider.naam)} wint!</h1>
+         <p>Proficiat — en aan de rest: volgend jaar herkansing.</p>
+       </div>`
+    : `<div class="winnaar">
+         <div class="kroon">📊</div>
+         <h1>Tussenstand</h1>
+         <p>${esc(koploperZin(b.stand))}</p>
+       </div>`;
+
   return `
-    <div style="display:flex;flex-direction:column;align-items:center;gap:3vmin;width:100%">
-      <div class="winnaar">
-        <div class="kroon">👑</div>
-        <h1>${esc(winnaar.naam)} wint!</h1>
-        <p>Proficiat — en aan de rest: volgend jaar herkansing.</p>
-      </div>
+    <div class="podiumblok">
+      ${kop}
       <div class="podium">${treden}</div>
-      ${rest.length ? `<div class="stand" style="max-width:80vmin">${rest.map((t) => `
+      ${rest.length ? `<div class="stand smal">${rest.map((t) => `
         <div class="standrij">
           <span class="plaats">${t.plaats}</span>
-          <span class="emoji">${esc(t.emoji)}</span>
+          ${gezicht(t, 'klein')}
           <span class="naam">${esc(t.naam)}</span>
           <span class="punten">${t.score}</span>
         </div>`).join('')}</div>` : ''}
     </div>`;
+}
+
+// Eén nette zin over hoe het ervoor staat, in plaats van losse stukjes
+// die aan elkaar geplakt raar gaan lopen.
+function koploperZin(stand) {
+  if (!stand.length) return '';
+  if (stand.length < 2) return `${stand[0].naam} staat alleen aan kop`;
+
+  const verschil = stand[0].score - stand[1].score;
+  if (verschil === 0) {
+    const gelijk = stand.filter((t) => t.score === stand[0].score).length;
+    return gelijk > 2
+      ? `${gelijk} teams delen de leiding — dit wordt spannend`
+      : 'Gelijkspel aan kop — dit wordt spannend';
+  }
+  if (verschil <= 30) return `${stand[0].naam} staat nipt voor, met ${verschil} punten`;
+  return `${stand[0].naam} staat voor met ${verschil} punten`;
 }
 
 /* ------------------------------------------------------------------ *
@@ -372,16 +410,41 @@ function tekenStrepen(b) {
   doek.innerHTML = stukken.join('');
 }
 
+// Start of stopt het aftellen, afhankelijk van of alle teams binnen zijn.
+function regelAftellen(b) {
+  const vraagId = `${b.ronde?.id || ''}|${b.vraag?.nummer || 0}`;
+
+  if (b.fase === 'vraag' && b.iedereenKlaar) {
+    if (aftelVoor !== vraagId) {
+      aftelVoor = vraagId;
+      aftelTot = Date.now() + AFTELLEN_MS;
+    }
+    return;
+  }
+  // Vraag gesloten of iemand kan nog antwoorden: niet (meer) aftellen.
+  aftelTot = 0;
+  if (b.fase !== 'vraag') aftelVoor = '';
+}
+
+// Eén keer, tijdens de lobby: alle foto's in de cache trekken.
+let fotosGeladen = false;
+function laadFotosVooraf(b) {
+  if (fotosGeladen || !b.fotosVooraf?.length) return;
+  fotosGeladen = true;
+  for (const pad of b.fotosVooraf) new Image().src = pad;
+}
+
 function werkLosseDelenBij(b) {
   const teller = document.getElementById('binnenTeller');
   if (teller) teller.textContent = b.antwoordenBinnen;
 
+  laadFotosVooraf(b);
+
+  regelAftellen(b);
   tekenStrepen(b);
 
   if (b.fase === 'lobby') {
-    voetStatus.textContent = b.stand.length
-      ? `${b.stand.length} team${b.stand.length === 1 ? '' : 's'} klaar`
-      : 'Wachten op de eerste ploeg…';
+    voetStatus.textContent = ''; // staat al groot in beeld bij de teams
   } else if (b.fase === 'vraag') {
     voetStatus.textContent = 'Vraag staat open';
   } else {
@@ -392,6 +455,22 @@ function werkLosseDelenBij(b) {
 function tik() {
   requestAnimationFrame(tik);
   if (!beeld || beeld.fase !== 'vraag' || !beeld.vraagStart) return;
+
+  // Iedereen is binnen: nog even, en dan het antwoord.
+  const aftelVak = document.getElementById('aftellen');
+  if (aftelTot) {
+    const over = Math.max(0, aftelTot - Date.now());
+    if (aftelVak) {
+      aftelVak.classList.remove('verborgen');
+      aftelVak.textContent = `Iedereen is binnen — antwoord over ${Math.ceil(over / 1000)}`;
+    }
+    if (over === 0) {
+      aftelTot = 0;
+      stuurCommando('volgende');
+    }
+  } else if (aftelVak) {
+    aftelVak.classList.add('verborgen');
+  }
 
   const limiet = beeld.vraag?.seconden || 30;
   const verstreken = (Date.now() + klokAfwijking - beeld.vraagStart) / 1000;
@@ -405,17 +484,12 @@ function tik() {
   if (balk) balk.style.strokeDashoffset = String(OMTREK * deel);
   if (klok) klok.classList.toggle('bijna', over <= 5);
 
-  // De zoomronde: we beginnen op een detail en openen traag het beeld.
-  const zoom = document.getElementById('zoomSvg');
-  if (zoom && beeld.vraag?.focus) {
-    const f = beeld.vraag.focus;
-    const [vx, vy, vb, vh] = beeld.vraag.art.viewBox.split(' ').map(Number);
+  // De zoomronde: sterk ingezoomd beginnen en traag opentrekken.
+  const zoom = document.getElementById('zoomFoto');
+  if (zoom) {
     const t = deel * deel; // eerst traag, dan sneller open
-    const x = f.x + (vx - f.x) * t;
-    const y = f.y + (vy - f.y) * t;
-    const b2 = f.w + (vb - f.w) * t;
-    const h2 = f.h + (vh - f.h) * t;
-    zoom.setAttribute('viewBox', `${x} ${y} ${b2} ${h2}`);
+    const schaal = 8 - 7 * t; // van 8x tot 1x
+    zoom.style.transform = `scale(${schaal.toFixed(3)})`;
   }
 }
 

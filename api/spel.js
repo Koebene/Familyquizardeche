@@ -11,6 +11,7 @@ import {
   sluitAan,
   neemAntwoord,
   neemTekening,
+  zetTeamFoto,
   volgende,
   terug,
   hostBeeld,
@@ -127,7 +128,7 @@ async function afhandelenPost(req, res) {
     const spelerId = String(body.spelerId || '').slice(0, 40) || maakId();
     const uitkomst = await pasAan(code, (spel) => {
       if (spel.fase !== 'lobby') return { fout: 'De quiz is al bezig. Sluit aan bij een bestaand team.' };
-      const gemaakt = voegTeamToe(spel, body.naam);
+      const gemaakt = voegTeamToe(spel, body.naam, body.foto);
       if (gemaakt.fout) return gemaakt;
       return sluitAan(spel, gemaakt.team.id, spelerId, body.spelerNaam);
     });
@@ -151,6 +152,14 @@ async function afhandelenPost(req, res) {
       if (!team) return { fout: 'Je zit nog in geen enkel team.' };
       return neemAntwoord(spel, team.id, body.waarde);
     });
+    if (uitkomst.fout) return stuur(res, 400, uitkomst);
+    return stuur(res, 200, { ok: true, beeld: spelerBeeld(uitkomst.spel, spelerId) });
+  }
+
+  /* ---- de teamfoto zetten of wissen ---- */
+  if (actie === 'foto') {
+    const spelerId = String(body.spelerId || '').slice(0, 40);
+    const uitkomst = await pasAan(code, (spel) => zetTeamFoto(spel, spelerId, body.foto));
     if (uitkomst.fout) return stuur(res, 400, uitkomst);
     return stuur(res, 200, { ok: true, beeld: spelerBeeld(uitkomst.spel, spelerId) });
   }

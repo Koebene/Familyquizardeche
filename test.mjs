@@ -8,10 +8,10 @@
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { join, dirname } from 'node:path';
-import { readdirSync, statSync } from 'node:fs';
+import { statSync } from 'node:fs';
 
 import { rondes, tussenstandNa } from './lib/quiz-data.js';
-import { art } from './lib/art.js';
+import { FOTOS } from './lib/fotos.js';
 import { isGoedAntwoord, normaliseer } from './lib/engine.js';
 import { maakQrMatrix, formaatBits, versieBits } from './public/qr.js';
 
@@ -67,13 +67,21 @@ for (const ronde of rondes) {
     }
 
     if (ronde.type === 'geo' || ronde.type === 'zoom') {
-      check(`${waarV} verwijst naar een bestaande tekening`, !!art[v.art], v.art);
+      check(`${waarV} verwijst naar een bestaande foto`, !!FOTOS[v.foto], v.foto);
       check(`${waarV} heeft alternatieve antwoorden`, (v.accept?.length ?? 0) > 0);
       check(`${waarV} keurt zijn eigen antwoord goed`, isGoedAntwoord(v.antwoord, v));
+      const bestand = FOTOS[v.foto]?.bestand;
+      if (bestand) {
+        const pad = join(HIER, 'public', bestand.replace(/^\//, ''));
+        let grootte = 0;
+        try { grootte = statSync(pad).size; } catch { /* blijft 0 */ }
+        check(`${waarV}: het fotobestand staat er`, grootte > 10000, `${bestand} (${grootte} bytes)`);
+        check(`${waarV}: de foto is niet loodzwaar`, grootte < 1200 * 1024, `${(grootte / 1024).toFixed(0)}kB`);
+      }
     }
 
-    if (ronde.type === 'zoom') {
-      check(`${waarV} heeft een startkader om op in te zoomen`, !!art[v.art]?.focus, v.art);
+    if (ronde.type === 'mc') {
+      check(`${waarV} heeft een domein`, !!v.domein);
     }
 
     if (ronde.type === 'open') {
@@ -96,20 +104,14 @@ for (const id of tussenstandNa) {
 }
 check('de laatste ronde krijgt geen tussenstand', !tussenstandNa.includes(rondes[rondes.length - 1].id));
 
-// Elke tekening moet ergens gebruikt worden.
-const gebruikt = new Set(rondes.flatMap((r) => r.vragen.map((v) => v.art)).filter(Boolean));
-for (const sleutel of Object.keys(art)) {
-  check(`tekening "${sleutel}" wordt gebruikt`, gebruikt.has(sleutel));
-}
-
-// Geen kapotte kleurwaarden in de tekeningen.
-for (const [sleutel, tekening] of Object.entries(art)) {
-  const kleuren = [...tekening.svg.matchAll(/fill="([^"]*)"|stroke="([^"]*)"/g)]
-    .map((m) => m[1] ?? m[2])
-    .filter((k) => k && k !== 'none' && !k.startsWith('url('));
-  const stuk = kleuren.filter((k) => !/^#[0-9a-f]{3,8}$/i.test(k) && !/^[a-z]+$/i.test(k));
-  check(`tekening "${sleutel}" heeft geldige kleuren`, stuk.length === 0, stuk.join(', '));
-  check(`tekening "${sleutel}" heeft een viewBox`, /^[\d\s.-]+$/.test(tekening.viewBox));
+// Elke foto die we gebruiken moet een bronvermelding hebben, want het
+// gaat om werk van iemand anders.
+const gebruikteFotos = new Set(rondes.flatMap((r) => r.vragen.map((v) => v.foto)).filter(Boolean));
+for (const sleutel of gebruikteFotos) {
+  const foto = FOTOS[sleutel];
+  check(`foto "${sleutel}" heeft een maker`, !!foto?.maker);
+  check(`foto "${sleutel}" heeft een licentie`, !!foto?.licentie);
+  check(`foto "${sleutel}" verwijst naar zijn bronpagina`, /^https:\/\/commons\.wikimedia\.org\//.test(foto?.pagina || ''));
 }
 
 /* ================================================================== *
@@ -308,7 +310,7 @@ try {
 
   check('de quiz bereikt het einde', b.fase === 'einde', b.fase);
   check('alle tien de rondes zijn gespeeld', gespeeld.size === 10, [...gespeeld].join(', '));
-  check('vier tussenstanden getoond', standen.length === 4, standen.join(', '));
+  check('na elke ronde behalve de laatste een tussenstand', standen.length === rondes.length - 1, standen.join(', '));
   check('elk team heeft punten', b.stand.every((t) => t.score > 0), b.stand.map((t) => `${t.naam}:${t.score}`).join(' '));
   check('de stand is op volgorde', b.stand.every((t, i) => i === 0 || b.stand[i - 1].score >= t.score));
 
