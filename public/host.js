@@ -13,6 +13,25 @@ const verderKnop = document.getElementById('verderKnop');
 const code = new URLSearchParams(location.search).get('code')?.toUpperCase() || '';
 const hostToken = localStorage.getItem(`quiz:host:${code}`) || '';
 
+// Het adres dat in de QR-code terechtkomt. Online is dat gewoon het
+// adres van deze pagina; draait de quiz lokaal op localhost, dan vragen
+// we de server naar zijn netwerkadres — want "localhost" op een gsm
+// wijst naar die gsm zelf en niet naar de laptop.
+let deelBasis = location.origin;
+
+async function bepaalDeelAdres() {
+  if (!/^(localhost|127\.0\.0\.1|\[::1\])$/i.test(location.hostname)) return;
+  try {
+    const antwoord = await fetch('/api/adres', { cache: 'no-store' });
+    if (!antwoord.ok) return;
+    const { adres } = await antwoord.json();
+    if (adres) deelBasis = `http://${adres}`;
+  } catch {
+    // Lukt het niet, dan blijft localhost staan en tikt men het adres
+    // van de laptop zelf in. Beter dan een QR-code die niets doet.
+  }
+}
+
 let beeld = null;
 let sleutel = '';
 let klokAfwijking = 0; // verschil tussen de serverklok en deze machine
@@ -107,7 +126,7 @@ function tekenFase(b) {
 /* ------------------------------- Lobby ------------------------------ */
 
 function tekenLobby(b) {
-  const url = `${location.origin}/mee?code=${b.code}`;
+  const url = `${deelBasis}/mee?code=${b.code}`;
   const qr = qrAlsSvg(url, { module: 6, rand: 3 });
 
   const teams = b.stand.length
@@ -123,7 +142,7 @@ function tekenLobby(b) {
     <div class="lobby">
       <div class="lobby-links">
         <div class="lobby-qr">${qr}</div>
-        <div class="lobby-url">of surf naar<br><strong>${esc(location.host)}</strong></div>
+        <div class="lobby-url">of surf naar<br><strong>${esc(deelBasis.replace(/^https?:\/\//, ''))}</strong></div>
       </div>
       <div class="lobby-rechts">
         <h1>Scan met je gsm</h1>
@@ -443,6 +462,10 @@ if (!code || !hostToken) {
     </div>`;
   verderKnop.disabled = true;
 } else {
-  pols();
-  requestAnimationFrame(tik);
+  // Eerst het juiste deeladres ophalen, anders staat er even een
+  // QR-code met "localhost" op het scherm die niemand kan gebruiken.
+  bepaalDeelAdres().then(() => {
+    pols();
+    requestAnimationFrame(tik);
+  });
 }

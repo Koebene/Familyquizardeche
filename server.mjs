@@ -66,6 +66,14 @@ const server = http.createServer(async (req, res) => {
     return handler(req, res);
   }
 
+  // Het groot scherm draait meestal op localhost, maar dat adres is
+  // waardeloos in een QR-code: een gsm die het scant zoekt zichzelf.
+  // Hier vertellen we de pagina op welk adres de laptop te bereiken is.
+  if (url.pathname === '/api/adres') {
+    res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
+    return res.end(JSON.stringify({ adres: `${lokaalAdres()}:${POORT}` }));
+  }
+
   const bestand = await zoekBestand(url.pathname);
   if (!bestand) {
     res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
