@@ -843,6 +843,18 @@ kbd {
   transition: width 0.4s linear, background 0.4s ease;
 }
 .statusregel.bijna .balk i { background: var(--rood); }
+.statusregel #statusTekst.waarschuwing { color: var(--goud); font-weight: 600; }
+
+/* Wat het team al ingestuurd heeft, zodat je niet blind iets overschrijft. */
+.teamantwoord {
+  padding: 0.7rem 0.9rem;
+  border-radius: 12px;
+  background: rgba(232, 181, 99, 0.12);
+  border: 1px solid rgba(232, 181, 99, 0.32);
+  font-size: 0.92rem;
+  line-height: 1.4;
+  animation: opduiken 0.3s var(--vloeiend);
+}
 
 .resultaatkaart {
   border-radius: 18px;

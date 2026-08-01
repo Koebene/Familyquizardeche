@@ -150,7 +150,7 @@ async function afhandelenPost(req, res) {
     const uitkomst = await pasAan(code, (spel) => {
       const team = spel.teams.find((t) => t.leden.some((l) => l.id === spelerId));
       if (!team) return { fout: 'Je zit nog in geen enkel team.' };
-      return neemAntwoord(spel, team.id, body.waarde);
+      return neemAntwoord(spel, team.id, body.waarde, spelerId);
     });
     if (uitkomst.fout) return stuur(res, 400, uitkomst);
     return stuur(res, 200, { ok: true, beeld: spelerBeeld(uitkomst.spel, spelerId) });

@@ -568,6 +568,7 @@ function tekenVraag(b) {
 
 function statusregel() {
   return `
+    <div class="teamantwoord verborgen" id="teamAntwoord"></div>
     <div class="statusregel" id="statusregel">
       <span id="statusTekst">Nog niets ingestuurd</span>
       <span class="balk"><i id="statusBalk" style="width:100%"></i></span>
@@ -690,17 +691,38 @@ function werkBij(b) {
     knop.classList.toggle('gekozen', gekozen === waarde);
   });
 
+  // Bij open vragen zie je niet welk antwoord er al staat, want je typt
+  // in een leeg veld. Daarom tonen we het team-antwoord apart.
+  const teamAntwoord = document.getElementById('teamAntwoord');
+  if (teamAntwoord) {
+    const heeft = b.antwoord != null && typeof b.antwoord.waarde === 'string' && b.antwoord.waarde.trim();
+    if (heeft) {
+      teamAntwoord.textContent = b.antwoord.door
+        ? `${b.antwoord.door} stuurde in: "${b.antwoord.waarde}"`
+        : `Ingestuurd: "${b.antwoord.waarde}"`;
+      teamAntwoord.classList.remove('verborgen');
+    } else {
+      teamAntwoord.classList.add('verborgen');
+    }
+  }
+
   const tekst = document.getElementById('statusTekst');
   if (tekst) {
     const doorraden = ['zoom', 'charades', 'tekenen'].includes(b.ronde?.type);
     const mis = b.antwoord?.mis || 0;
+    // Een team heeft één antwoord. Wie het instuurde erbij zetten, want
+    // anders overschrijven ploegmaats elkaar zonder het te merken.
+    const doorAnder = b.antwoord?.door && b.antwoord.vanMij === false;
 
     if (b.magTekenen) tekst.textContent = 'Iedereen kijkt mee';
     else if (b.beeldtUit) tekst.textContent = 'Jullie zijn aan zet';
-    else if (b.antwoord?.vast) tekst.textContent = 'Juist! Vastgezet';
+    else if (b.antwoord?.vast) tekst.textContent = `Juist! Vastgezet${b.antwoord.door ? ` door ${b.antwoord.door}` : ''}`;
     else if (mis && doorraden) tekst.textContent = `${mis} misgok${mis === 1 ? '' : 'ken'} — ${mis * 15} punten kwijt`;
+    else if (doorAnder) tekst.textContent = `${b.antwoord.door} antwoordde al voor het team`;
     else if (b.antwoord != null) tekst.textContent = 'Ingestuurd — je mag nog wijzigen';
     else tekst.textContent = 'Nog niets ingestuurd';
+
+    tekst.classList.toggle('waarschuwing', !!doorAnder);
   }
 }
 
