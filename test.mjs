@@ -188,53 +188,68 @@ function opdracht(rondeId, zoek) {
 const goed = (invoer, v, label) => check(`"${invoer}" is goed (${label})`, isGoedAntwoord(invoer, v));
 const mis = (invoer, v, label) => check(`"${invoer}" is fout (${label})`, !isGoedAntwoord(invoer, v));
 
-const merckx = vraag('cryptisch', 'Merckx');
-goed('Eddy Merckx', merckx, 'volledig');
-goed('merckx', merckx, 'achternaam');
-goed('Eddy Merkx', merckx, 'typfout');
-mis('Tom Boonen', merckx, 'andere renner');
+const beethoven = vraag('cryptisch', 'Beethoven');
+goed('Ludwig van Beethoven', beethoven, 'volledig');
+goed('beethoven', beethoven, 'achternaam');
+mis('Mozart', beethoven, 'andere componist');
 
-const herge = vraag('cryptisch', 'Hergé');
-goed('Hergé', herge, 'met accent');
-goed('herge', herge, 'zonder accent');
-const jcvd = vraag('cryptisch', 'Van Damme');
-goed('van damme', jcvd, 'achternaam');
-goed('JCVD', jcvd, 'afkorting');
+const boonen = vraag('cryptisch', 'Boonen');
+goed('Tom Boonen', boonen, 'volledig');
+goed('boonen', boonen, 'achternaam');
+goed('Tommeke', boonen, 'bijnaam');
 
-const belgie = vraag('geo', 'atomium');
+const mercator = vraag('cryptisch', 'Mercator');
+goed('Mercator', mercator, 'achternaam');
+goed('Gerardus Mercator', mercator, 'volledig');
+goed('mercatoor', mercator, 'typfout');
+
+const belgie = vraag('geo', 'brugge');
 goed('België', belgie, 'met accent');
 goed('belgie', belgie, 'zonder accent');
 mis('Nederland', belgie, 'ander land');
-const uk = vraag('geo', 'bigben');
+
+const uk = vraag('geo', 'towerbridge');
 goed('Engeland', uk, 'volkstaal');
 goed('uk', uk, 'afkorting');
+goed('Verenigd Koninkrijk', uk, 'officieel');
 
-const leeuw = vraag('emoji', 'Lion King');
-goed('De Leeuwenkoning', leeuw, 'nederlandse titel');
-goed('lion king', leeuw, 'engelse titel');
-mis('Madagascar', leeuw, 'andere film');
+const emiraten = vraag('geo', 'dubai');
+goed('Verenigde Arabische Emiraten', emiraten, 'voluit');
+goed('emiraten', emiraten, 'kort');
 
-const friet = vraag('zoom', 'frieten');
-goed('frietjes', friet, 'verkleinwoord');
-goed('een pak frieten', friet, 'met lidwoord');
-mis('pizza', friet, 'iets anders');
+const spider = vraag('emoji', 'Spider-Man');
+goed('spiderman', spider, 'aaneen');
+goed('Spider-Man', spider, 'met streepje');
+mis('Batman', spider, 'andere held');
 
-const pinguin = opdracht('uitbeelden', 'pinguïn');
-goed('pinguin', pinguin, 'kernwoord');
-goed('pinguïns die waggelen', pinguin, 'in een zin');
-mis('ijsbeer', pinguin, 'fout dier');
-goed('strafschop', opdracht('uitbeelden', 'penalty'), 'synoniem');
+const aardbei = vraag('zoom', 'aardbei');
+goed('aardbeien', aardbei, 'meervoud');
+goed('een aardbei', aardbei, 'met lidwoord');
+mis('framboos', aardbei, 'ander fruit');
 
-const kat = opdracht('tekenen', 'stofzuiger');
-goed('een kat op een stofzuiger', kat, 'volledig');
-goed('poes stofzuiger', kat, 'synoniem');
-goed('stofzuigende kat', kat, 'verbuiging');
-mis('een kat', kat, 'halve gok');
-mis('hond op een stofzuiger', kat, 'fout dier');
+const pluis = vraag('zoom', 'paardenbloem');
+goed('pluizenbol', pluis, 'volksnaam');
+goed('paardenbloem', pluis, 'gewone naam');
 
-const gsm = opdracht('tekenen', 'toilet');
-goed('telefoon in de wc', gsm, 'synoniemen');
-mis('telefoon', gsm, 'onvolledig');
+// De opvoerrondes werken op sleutelwoorden, niet op de hele zin.
+const fietsen = opdracht('uitbeelden', 'Fietsen');
+goed('fietsen', fietsen, 'kernwoord');
+goed('hij is aan het fietsen', fietsen, 'in een zin');
+goed('velo', fietsen, 'synoniem');
+mis('lopen', fietsen, 'iets anders');
+
+const stofzuigen = opdracht('uitbeelden', 'Stofzuigen');
+goed('stofzuigen', stofzuigen, 'kernwoord');
+goed('met de stofzuiger bezig', stofzuigen, 'in een zin');
+
+const tekenKat = opdracht('tekenen', 'Een kat');
+goed('kat', tekenKat, 'kernwoord');
+goed('een poes', tekenKat, 'synoniem met lidwoord');
+mis('hond', tekenKat, 'verkeerd dier');
+
+const vuurtoren = opdracht('tekenen', 'vuurtoren');
+goed('vuurtoren', vuurtoren, 'kernwoord');
+goed('een vuurtoren aan zee', vuurtoren, 'in een zin');
 
 /* ================================================================== *
  * 2b. Kosten foute antwoorden wat ze horen te kosten?
@@ -252,8 +267,22 @@ kop('Strafpunten');
     fout: { waarde: 3, at: nu },
   }, nu, []);
   check('juist meerkeuze levert punten op', mcUit.juist.punten > 0, String(mcUit.juist.punten));
-  check('fout meerkeuze kost punten', mcUit.fout.punten === PUNTEN.fout.mc, String(mcUit.fout.punten));
+  // Buiten de doorraadrondes staat er bewust geen straf op een misser:
+  // daar valt met gokken toch niets te winnen.
+  check('fout meerkeuze kost niets', mcUit.fout.punten === 0, String(mcUit.fout.punten));
   check('wie niets instuurt komt niet in de uitslag', !('stil' in mcUit));
+
+  const wnwUit = berekenPunten({ type: 'truefalse', seconden: 18 }, { antwoord: true }, {
+    juist: { waarde: true, at: nu },
+    fout: { waarde: false, at: nu },
+  }, nu, []);
+  check('fout bij waar/niet waar kost niets', wnwUit.fout.punten === 0, String(wnwUit.fout.punten));
+
+  const openUit = berekenPunten({ type: 'open', seconden: 30 }, { antwoord: 'Titanic', accept: ['titanic'] }, {
+    juist: { waarde: 'titanic', at: nu },
+    fout: { waarde: 'iets anders', at: nu },
+  }, nu, []);
+  check('fout bij een open vraag kost niets', openUit.fout.punten === 0, String(openUit.fout.punten));
 
   const zoomRonde = { type: 'zoom', seconden: 30 };
   const zoomVraag = { antwoord: 'Een fiets', accept: ['fiets'] };

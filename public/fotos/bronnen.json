@@ -1,317 +1,289 @@
 {
-  "atomium": {
-    "bestand": "atomium.jpg",
-    "titel": "Brussels_-_Atomium_2022.jpg",
-    "licentie": "CC BY-SA 4.0",
-    "maker": "Marek Śliwecki",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Brussels_-_Atomium_2022.jpg"
-  },
-  "eiffel": {
-    "bestand": "eiffel.jpg",
-    "titel": "Tour eiffel at sunrise from the trocadero.jpg",
+  "pisa": {
+    "bestand": "pisa.jpg",
+    "titel": "The Leaning Tower of Pisa SB.jpeg",
     "licentie": "CC BY-SA 3.0",
-    "maker": "Tristan Nitot",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Tour%20eiffel%20at%20sunrise%20from%20the%20trocadero.jpg"
+    "maker": "Saffron Blaze",
+    "pagina": "https://commons.wikimedia.org/wiki/File:The%20Leaning%20Tower%20of%20Pisa%20SB.jpeg"
   },
-  "bigben": {
-    "bestand": "bigben.jpg",
-    "titel": "Elizabeth_Tower,_June_2022.jpg",
-    "licentie": "CC BY-SA 2.0",
-    "maker": "Dave Bezaire",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Elizabeth_Tower%2C_June_2022.jpg"
-  },
-  "gizeh": {
-    "bestand": "gizeh.jpg",
-    "titel": "Sphinx_with_the_third_pyramid.jpg",
-    "licentie": "CC0",
-    "maker": "Hesham Ebaid",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Sphinx_with_the_third_pyramid.jpg"
-  },
-  "santorini": {
-    "bestand": "santorini.jpg",
-    "titel": "Oia_sunset_-_panoramio_(2).jpg",
-    "licentie": "CC BY 3.0",
-    "maker": "TomasEE",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Oia_sunset_-_panoramio_(2).jpg"
-  },
-  "sagrada": {
-    "bestand": "sagrada.jpg",
-    "titel": "SF_maig_2_cropped.jpg",
-    "licentie": "CC BY-SA 4.0",
-    "maker": "Canaan",
-    "pagina": "https://commons.wikimedia.org/wiki/File:SF_maig_2_cropped.jpg"
-  },
-  "christus": {
-    "bestand": "christus.jpg",
-    "titel": "Christ_the_Redeemer_-_Cristo_Redentor.jpg",
-    "licentie": "CC BY-SA 3.0 de",
-    "maker": "Arne Müseler",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Christ_the_Redeemer_-_Cristo_Redentor.jpg"
-  },
-  "tajmahal": {
-    "bestand": "tajmahal.jpg",
-    "titel": "Taj_Mahal_(Edited).jpeg",
-    "licentie": "CC BY-SA 4.0",
-    "maker": "Yann; edited by Jim Carter",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Taj_Mahal_(Edited).jpeg"
-  },
-  "voetbal": {
-    "bestand": "voetbal.jpg",
-    "titel": "Football ball.jpg",
+  "goldengate": {
+    "bestand": "goldengate.jpg",
+    "titel": "Golden Gate Bridge by night.jpg",
     "licentie": "CC BY-SA 3.0",
-    "maker": "Илья Яковлев",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Football%20ball.jpg"
+    "maker": "Image taken by Daniel Schwen",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Golden%20Gate%20Bridge%20by%20night.jpg"
   },
-  "paraplu": {
-    "bestand": "paraplu.jpg",
-    "titel": "Malacca Malaysia Colourful-Two-ladies-with-umbrellas-01.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "CEphoto, Uwe Aranas",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Malacca%20Malaysia%20Colourful-Two-ladies-with-umbrellas-01.jpg"
-  },
-  "gitaar": {
-    "bestand": "gitaar.jpg",
-    "titel": "Harri Stojka 30.08.2008c.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Manfred Werner - Tsui",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Harri%20Stojka%2030.08.2008c.jpg"
-  },
-  "zonnebloem": {
-    "bestand": "zonnebloem.jpg",
-    "titel": "Close-up photographs of sunflowers in Bulacan 02.jpg",
+  "montsaintmichel": {
+    "bestand": "montsaintmichel.jpg",
+    "titel": "Mont-Saint-Michel_vu_du_ciel.jpg",
     "licentie": "CC BY-SA 4.0",
-    "maker": "LubGua987",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Close-up%20photographs%20of%20sunflowers%20in%20Bulacan%2002.jpg"
+    "maker": "Amaustan",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Mont-Saint-Michel_vu_du_ciel.jpg"
   },
-  "colosseum": {
-    "bestand": "colosseum.jpg",
-    "titel": "Exterior of the Colosseum 03.jpg",
-    "licentie": "CC BY-SA 4.0",
-    "maker": "Nicholas Gemini",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Exterior%20of%20the%20Colosseum%2003.jpg"
-  },
-  "kinderdijk": {
-    "bestand": "kinderdijk.jpg",
-    "titel": "KinderdijkMolens02.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Lucas Hirschegger",
-    "pagina": "https://commons.wikimedia.org/wiki/File:KinderdijkMolens02.jpg"
-  },
-  "vrijheidsbeeld": {
-    "bestand": "vrijheidsbeeld.jpg",
-    "titel": "Statue of Liberty frontal 2.jpg",
+  "brugge": {
+    "bestand": "brugge.jpg",
+    "titel": "Bruges canal buildings.jpg",
     "licentie": "Public domain",
-    "maker": "Daniel Schwen",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Statue%20of%20Liberty%20frontal%202.jpg"
+    "maker": "Redlands597198",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Bruges%20canal%20buildings.jpg"
   },
-  "brandenburger": {
-    "bestand": "brandenburger.jpg",
-    "titel": "Brandenburg Gate Quadriga at Night.jpg",
-    "licentie": "CC BY-SA 2.5",
-    "maker": "א (Aleph) Creator: Johann Gottfried Schadow",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Brandenburg%20Gate%20Quadriga%20at%20Night.jpg"
-  },
-  "frieten": {
-    "bestand": "frieten.jpg",
-    "titel": "Frituur fries frikandel mayo curry ketchup.jpg",
-    "licentie": "CC BY 2.0",
-    "maker": "Jon Åslund",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Frituur%20fries%20frikandel%20mayo%20curry%20ketchup.jpg"
-  },
-  "fiets": {
-    "bestand": "fiets.jpg",
-    "titel": "Bike Share Toronto bicycle at Yonge and Lake Shore kiosk.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Jason Zhang",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Bike%20Share%20Toronto%20bicycle%20at%20Yonge%20and%20Lake%20Shore%20kiosk.jpg"
-  },
-  "ijsje": {
-    "bestand": "ijsje.jpg",
-    "titel": "Gelato Cones (Florence).jpg",
-    "licentie": "CC BY 2.0",
-    "maker": "Aaron",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Gelato%20Cones%20(Florence).jpg"
-  },
-  "schaakstuk": {
-    "bestand": "schaakstuk.jpg",
-    "titel": "Paris - Playing chess at the Jardins du Luxembourg - 2966.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Jorge Royan",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Paris%20-%20Playing%20chess%20at%20the%20Jardins%20du%20Luxembourg%20-%202966.jpg"
-  },
-  "machupicchu": {
-    "bestand": "machupicchu.jpg",
-    "titel": "Peru - Machu Picchu 146 - ruins and Huayna Picchu (8296861275).jpg",
-    "licentie": "CC BY 2.0",
-    "maker": "McKay Savage from London, UK",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Peru%20-%20Machu%20Picchu%20146%20-%20ruins%20and%20Huayna%20Picchu%20(8296861275).jpg"
-  },
-  "sydney": {
-    "bestand": "sydney.jpg",
-    "titel": "Sydney Harbour Bridge night.jpg",
+  "towerbridge": {
+    "bestand": "towerbridge.jpg",
+    "titel": "Tower Bridge London Feb 2006.jpg",
     "licentie": "CC BY-SA 3.0",
     "maker": "Diliff",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Sydney%20Harbour%20Bridge%20night.jpg"
+    "pagina": "https://commons.wikimedia.org/wiki/File:Tower%20Bridge%20London%20Feb%202006.jpg"
   },
-  "moskou": {
-    "bestand": "moskou.jpg",
-    "titel": "Basil-cathedral-morning.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "A.Savin",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Basil-cathedral-morning.jpg"
+  "neuschwanstein": {
+    "bestand": "neuschwanstein.jpg",
+    "titel": "Schloss_Neuschwanstein_2013.jpg",
+    "licentie": "CC BY-SA 3.0 de",
+    "maker": "Thomas Wolf, www.foto-tw.de",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Schloss_Neuschwanstein_2013.jpg"
   },
-  "chichenitza": {
-    "bestand": "chichenitza.jpg",
-    "titel": "Chichen-Itza-Castillo-Seen-From-East.JPG",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Bjørn Christian Tørrissen",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Chichen-Itza-Castillo-Seen-From-East.JPG"
-  },
-  "praag": {
-    "bestand": "praag.jpg",
-    "titel": "Prague skyline at dawn.jpg",
-    "licentie": "CC BY-SA 4.0",
-    "maker": "Petar Milošević",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Prague%20skyline%20at%20dawn.jpg"
-  },
-  "petra": {
-    "bestand": "petra.jpg",
-    "titel": "Al Khazneh Petra edit 2.jpg",
-    "licentie": "CC BY-SA 2.0",
-    "maker": "Al_Khazneh_Petra.jpg: Graham Racher from London, UK derivati",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Al%20Khazneh%20Petra%20edit%202.jpg"
-  },
-  "chefchaouen": {
-    "bestand": "chefchaouen.jpg",
-    "titel": "Chefchaouen, Morocco (5409541369) (4).jpg",
+  "amsterdam": {
+    "bestand": "amsterdam.jpg",
+    "titel": "Houses and canals in Amsterdam (26211187401).jpg",
     "licentie": "CC BY 2.0",
-    "maker": "YoTuT from United States",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Chefchaouen%2C%20Morocco%20(5409541369)%20(4).jpg"
+    "maker": "Tobias Niepel",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Houses%20and%20canals%20in%20Amsterdam%20(26211187401).jpg"
   },
-  "plitvice": {
-    "bestand": "plitvice.jpg",
-    "titel": "Waterfall in plitvice lakes national park, croatia.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Someone35",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Waterfall%20in%20plitvice%20lakes%20national%20park%2C%20croatia.jpg"
+  "akropolis": {
+    "bestand": "akropolis.jpg",
+    "titel": "Parthenon from south.jpg",
+    "licentie": "CC BY-SA 2.5",
+    "maker": "Thermos",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Parthenon%20from%20south.jpg"
   },
-  "kirkjufell": {
-    "bestand": "kirkjufell.jpg",
-    "titel": "2008-05-17 06 Kirkjufell at Grundarfjörður.jpg",
-    "licentie": "CC BY 2.5",
-    "maker": "Hansueli Krapf",
-    "pagina": "https://commons.wikimedia.org/wiki/File:2008-05-17%2006%20Kirkjufell%20at%20Grundarfj%C3%B6r%C3%B0ur.jpg"
-  },
-  "cappadocia": {
-    "bestand": "cappadocia.jpg",
-    "titel": "Balloons over Goreme.JPG",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "José Luiz",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Balloons%20over%20Goreme.JPG"
-  },
-  "bagan": {
-    "bestand": "bagan.jpg",
-    "titel": "20160801 Myanmar Bagan 6669.jpg",
-    "licentie": "CC BY-SA 4.0",
-    "maker": "Jakub Hałun",
-    "pagina": "https://commons.wikimedia.org/wiki/File:20160801%20Myanmar%20Bagan%206669.jpg"
-  },
-  "budapest": {
-    "bestand": "budapest.jpg",
-    "titel": "Budapest Parliament 4604.JPG",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Dirk Beyer",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Budapest%20Parliament%204604.JPG"
-  },
-  "hallstatt": {
-    "bestand": "hallstatt.jpg",
-    "titel": "Hammer CG (C06)HallstattSee.jpg",
+  "alhambra": {
+    "bestand": "alhambra.jpg",
+    "titel": "Alhambra in the evening.jpg",
     "licentie": "Public domain",
-    "maker": "",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Hammer%20CG%20(C06)HallstattSee.jpg"
+    "maker": "Jebulon",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Alhambra%20in%20the%20evening.jpg"
   },
-  "lissabon": {
-    "bestand": "lissabon.jpg",
-    "titel": "Torre Belém April 2009-4a.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Alvesgaspar",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Torre%20Bel%C3%A9m%20April%202009-4a.jpg"
-  },
-  "ananas": {
-    "bestand": "ananas.jpg",
-    "titel": "Ananas~May 2008-1.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Alvesgaspar",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Ananas~May%202008-1.jpg"
-  },
-  "dennenappel": {
-    "bestand": "dennenappel.jpg",
-    "titel": "Close up of pine cone from california beach 2.JPG",
+  "uluru": {
+    "bestand": "uluru.jpg",
+    "titel": "Petermann Ranges (AU), Uluru-Kata Tjuta National Park, Uluru -- 2019 -- 3602-6.jpg",
     "licentie": "CC BY-SA 4.0",
-    "maker": "Mbz1",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Close%20up%20of%20pine%20cone%20from%20california%20beach%202.JPG"
+    "maker": "Dietmar Rabich",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Petermann%20Ranges%20(AU)%2C%20Uluru-Kata%20Tjuta%20National%20Park%2C%20Uluru%20--%202019%20--%203602-6.jpg"
   },
-  "honingraat": {
-    "bestand": "honingraat.jpg",
-    "titel": "Bienenwachs.jpg",
-    "licentie": "CC BY 2.5",
-    "maker": "Waugsberg",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Bienenwachs.jpg"
+  "niagara": {
+    "bestand": "niagara.jpg",
+    "titel": "Niagara-Falls-Horseshoe-Falls-view.jpg",
+    "licentie": "CC BY 2.0",
+    "maker": "Photo (c)2007 Helen Filatova",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Niagara-Falls-Horseshoe-Falls-view.jpg"
   },
-  "kiwi": {
-    "bestand": "kiwi.jpg",
-    "titel": "New Zealand Golden Kiwifruit-lightblue.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "carol",
-    "pagina": "https://commons.wikimedia.org/wiki/File:New%20Zealand%20Golden%20Kiwifruit-lightblue.jpg"
-  },
-  "ritssluiting": {
-    "bestand": "ritssluiting.jpg",
-    "titel": "Metal zip.JPG",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Dimcho Hristov",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Metal%20zip.JPG"
-  },
-  "schelp": {
-    "bestand": "schelp.jpg",
-    "titel": "NautilusCutawayLogarithmicSpiral.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "",
-    "pagina": "https://commons.wikimedia.org/wiki/File:NautilusCutawayLogarithmicSpiral.jpg"
-  },
-  "veer": {
-    "bestand": "veer.jpg",
-    "titel": "Turkey feather close sdetwiler.JPG",
-    "licentie": "CC BY 3.0",
-    "maker": "Sdetwiler",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Turkey%20feather%20close%20sdetwiler.JPG"
-  },
-  "wol": {
-    "bestand": "wol.jpg",
-    "titel": "Yarn ball.jpg",
+  "fuji": {
+    "bestand": "fuji.jpg",
+    "titel": "Flickr - Shinrya - Mt Fuji from Chureito Pagoda.jpg",
     "licentie": "CC BY-SA 2.0",
-    "maker": "Lori from New York, NY, United States",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Yarn%20ball.jpg"
+    "maker": "Pete Stewart from Perth, Australia",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Flickr%20-%20Shinrya%20-%20Mt%20Fuji%20from%20Chureito%20Pagoda.jpg"
   },
-  "ui": {
-    "bestand": "ui.jpg",
-    "titel": "Allium cepa 001.JPG",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "H. Zell",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Allium%20cepa%20001.JPG"
-  },
-  "lego": {
-    "bestand": "lego.jpg",
-    "titel": "Light Green Lego Brick.jpg",
-    "licentie": "CC BY-SA 3.0",
-    "maker": "Stilfehler",
-    "pagina": "https://commons.wikimedia.org/wiki/File:Light%20Green%20Lego%20Brick.jpg"
-  },
-  "spons": {
-    "bestand": "spons.jpg",
-    "titel": "FMIB 42169 Turkey cup sponges, Mediterranean Sea.jpeg",
+  "chinesemuur": {
+    "bestand": "chinesemuur.jpg",
+    "titel": "Great wall of china-mutianyu 1.jpg",
     "licentie": "Public domain",
-    "maker": "Henry Frank Moore",
-    "pagina": "https://commons.wikimedia.org/wiki/File:FMIB%2042169%20Turkey%20cup%20sponges%2C%20Mediterranean%20Sea.jpeg"
+    "maker": "Rbramosjr",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Great%20wall%20of%20china-mutianyu%201.jpg"
+  },
+  "angkor": {
+    "bestand": "angkor.jpg",
+    "titel": "Angkor Wat, Camboya, 2013-08-16, DD 107.JPG",
+    "licentie": "CC BY-SA 3.0",
+    "maker": "Diego Delso",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Angkor%20Wat%2C%20Camboya%2C%202013-08-16%2C%20DD%20107.JPG"
+  },
+  "tafelberg": {
+    "bestand": "tafelberg.jpg",
+    "titel": "Table Mountain, Cape Town (P1050264).jpg",
+    "licentie": "CC BY-SA 4.0",
+    "maker": "Matti Blume",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Table%20Mountain%2C%20Cape%20Town%20(P1050264).jpg"
+  },
+  "dubai": {
+    "bestand": "dubai.jpg",
+    "titel": "Skyline-Dubai-2010.jpg",
+    "licentie": "CC BY-SA 2.5",
+    "maker": "Nepenthes",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Skyline-Dubai-2010.jpg"
+  },
+  "matterhorn": {
+    "bestand": "matterhorn.jpg",
+    "titel": "Matterhorn_from_Domhütte_-_2.jpg",
+    "licentie": "CC BY-SA 3.0",
+    "maker": "Photo: chil, on Camptocamp.org Derivative work:Zacharie Gros",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Matterhorn_from_Domh%C3%BCtte_-_2.jpg"
+  },
+  "stonehenge": {
+    "bestand": "stonehenge.jpg",
+    "titel": "Summer Solstice Sunrise over Stonehenge 2005.jpg",
+    "licentie": "CC BY-SA 2.0",
+    "maker": "",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Summer%20Solstice%20Sunrise%20over%20Stonehenge%202005.jpg"
+  },
+  "bled": {
+    "bestand": "bled.jpg",
+    "titel": "SloveeniaBled.jpg",
+    "licentie": "CC BY-SA 3.0",
+    "maker": "Abrget47j",
+    "pagina": "https://commons.wikimedia.org/wiki/File:SloveeniaBled.jpg"
+  },
+  "uyuni": {
+    "bestand": "uyuni.jpg",
+    "titel": "Watching Sunset Salar de Uyuni Bolivia Luca Galuzzi 2006.jpg",
+    "licentie": "CC BY-SA 2.5",
+    "maker": "Luca Galuzzi (Lucag)",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Watching%20Sunset%20Salar%20de%20Uyuni%20Bolivia%20Luca%20Galuzzi%202006.jpg"
+  },
+  "lofoten": {
+    "bestand": "lofoten.jpg",
+    "titel": "Reine i Lofoten LC0148.jpg",
+    "licentie": "CC BY-SA 2.0 de",
+    "maker": "Jörg Hempel",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Reine%20i%20Lofoten%20LC0148.jpg"
+  },
+  "halong": {
+    "bestand": "halong.jpg",
+    "titel": "Karst HaLongBay Vietnam (pixinn.net).jpg",
+    "licentie": "CC BY 3.0",
+    "maker": "Christophe Meneboeuf",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Karst%20HaLongBay%20Vietnam%20(pixinn.net).jpg"
+  },
+  "bran": {
+    "bestand": "bran.jpg",
+    "titel": "Bran castle Transylvania In Romania.jpg",
+    "licentie": "CC BY-SA 4.0",
+    "maker": "Beata Jankowska",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Bran%20castle%20Transylvania%20In%20Romania.jpg"
+  },
+  "cinqueterre": {
+    "bestand": "cinqueterre.jpg",
+    "titel": "Bright Colour Buildings Manarola Cinque Terre Sep23 A7C 07153.jpg",
+    "licentie": "CC BY-SA 4.0",
+    "maker": "This Photo was taken by Timothy A. Gonsalves. Feel free to u",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Bright%20Colour%20Buildings%20Manarola%20Cinque%20Terre%20Sep23%20A7C%2007153.jpg"
+  },
+  "tallinn": {
+    "bestand": "tallinn.jpg",
+    "titel": "Raekoja_plats_at_night.jpg",
+    "licentie": "CC BY 2.0",
+    "maker": "Jorge Franganillo",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Raekoja_plats_at_night.jpg"
+  },
+  "aardbei": {
+    "bestand": "aardbei.jpg",
+    "titel": "Macro of strawberry with hull.jpg",
+    "licentie": "CC BY 2.0",
+    "maker": "Micky from Northern Minnesota, USA",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Macro%20of%20strawberry%20with%20hull.jpg"
+  },
+  "banaan": {
+    "bestand": "banaan.jpg",
+    "titel": "Bananas by the bunch - Carrara Market (2569636765).jpg",
+    "licentie": "CC BY-SA 2.0",
+    "maker": "Alpha from Melbourne, Australia",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Bananas%20by%20the%20bunch%20-%20Carrara%20Market%20(2569636765).jpg"
+  },
+  "sleutels": {
+    "bestand": "sleutels.jpg",
+    "titel": "Solex_99_30_padlock_with_keys_(DSCF2659).jpg",
+    "licentie": "CC BY 4.0",
+    "maker": "Trougnouf",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Solex_99_30_padlock_with_keys_(DSCF2659).jpg"
+  },
+  "potloden": {
+    "bestand": "potloden.jpg",
+    "titel": "Colored pencils chevre.jpg",
+    "licentie": "CC BY-SA 3.0",
+    "maker": "Chevre",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Colored%20pencils%20chevre.jpg"
+  },
+  "popcorn": {
+    "bestand": "popcorn.jpg",
+    "titel": "Popcorn 6.jpg",
+    "licentie": "CC BY-SA 3.0",
+    "maker": "Deavmi",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Popcorn%206.jpg"
+  },
+  "broccoli": {
+    "bestand": "broccoli.jpg",
+    "titel": "Fractal Broccoli.jpg",
+    "licentie": "Public domain",
+    "maker": "Jon Sullivan",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Fractal%20Broccoli.jpg"
+  },
+  "koffiebonen": {
+    "bestand": "koffiebonen.jpg",
+    "titel": "Roasted coffee beans.jpg",
+    "licentie": "Public domain",
+    "maker": "MarkSweep",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Roasted%20coffee%20beans.jpg"
+  },
+  "bubbeltjes": {
+    "bestand": "bubbeltjes.jpg",
+    "titel": "Puchipuchi.jpg",
+    "licentie": "Public domain",
+    "maker": "",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Puchipuchi.jpg"
+  },
+  "boomschors": {
+    "bestand": "boomschors.jpg",
+    "titel": "A close up shot of a palm tree trunk texture.jpg",
+    "licentie": "Public domain",
+    "maker": "John Harvey",
+    "pagina": "https://commons.wikimedia.org/wiki/File:A%20close%20up%20shot%20of%20a%20palm%20tree%20trunk%20texture.jpg"
+  },
+  "mos": {
+    "bestand": "mos.jpg",
+    "titel": "Tionesta-ac-moss2.jpg",
+    "licentie": "CC BY 2.5",
+    "maker": "IvoShandor",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Tionesta-ac-moss2.jpg"
+  },
+  "spaghetti": {
+    "bestand": "spaghetti.jpg",
+    "titel": "Spaghetti (247838199).jpeg",
+    "licentie": "CC BY 3.0",
+    "maker": "Kevin Doncaster",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Spaghetti%20(247838199).jpeg"
+  },
+  "horloge": {
+    "bestand": "horloge.jpg",
+    "titel": "Alarm clock mainspring.JPG",
+    "licentie": "CC0",
+    "maker": "Chetvorno",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Alarm%20clock%20mainspring.JPG"
+  },
+  "kurk": {
+    "bestand": "kurk.jpg",
+    "titel": "Composite wine cork close up.jpg",
+    "licentie": "CC BY-SA 2.0",
+    "maker": "Beatrice Murch",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Composite%20wine%20cork%20close%20up.jpg"
+  },
+  "zeepbel": {
+    "bestand": "zeepbel.jpg",
+    "titel": "Soap Bubble - foliage background - iridescent colours - Traquair 040801.jpg",
+    "licentie": "CC BY-SA 3.0",
+    "maker": "",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Soap%20Bubble%20-%20foliage%20background%20-%20iridescent%20colours%20-%20Traquair%20040801.jpg"
+  },
+  "paardenbloem": {
+    "bestand": "paardenbloem.jpg",
+    "titel": "Dandelion seed head on black background.jpg",
+    "licentie": "CC BY 2.0",
+    "maker": "David Friel",
+    "pagina": "https://commons.wikimedia.org/wiki/File:Dandelion%20seed%20head%20on%20black%20background.jpg"
+  },
+  "knikkers": {
+    "bestand": "knikkers.jpg",
+    "titel": "I think I've lost my marbles - Flickr - LaserGuided.jpg",
+    "licentie": "CC BY 2.0",
+    "maker": "LaserGuided from World Without Borders",
+    "pagina": "https://commons.wikimedia.org/wiki/File:I%20think%20I've%20lost%20my%20marbles%20-%20Flickr%20-%20LaserGuided.jpg"
   }
 }
